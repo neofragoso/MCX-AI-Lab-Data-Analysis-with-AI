@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MCX AI Lab — Method Records (Steps 1–5)</title>
+<style>
+  :root{--ink:#14213D;--paper:#FBFAF7;--rule:#D9D4C6;--rule-soft:#EAE6DC;--slate:#5A6472;--crit:#A32118;--good:#1F6F4A;--sans:"Helvetica Neue",Helvetica,Arial,sans-serif;--serif:Georgia,"Times New Roman",serif;}
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{font-family:var(--sans);color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased;}
+  header{max-width:1100px;margin:0 auto;padding:32px 24px 12px;}
+  .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--slate);font-weight:700;margin:0 0 8px;}
+  h1{font-family:var(--serif);font-weight:600;font-size:34px;line-height:1.15;margin:0 0 10px;}
+  .lede{color:var(--slate);font-size:15px;line-height:1.5;max-width:760px;margin:0;}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 24px 40px;}
+  .tabs{display:flex;flex-wrap:wrap;gap:4px;border-bottom:2px solid var(--ink);margin:24px 0 0;}
+  .tab{appearance:none;border:none;background:transparent;cursor:pointer;font-family:var(--sans);font-size:13.5px;font-weight:600;color:var(--slate);padding:11px 16px;border-radius:6px 6px 0 0;letter-spacing:.02em;position:relative;top:2px;}
+  .tab:hover{color:var(--ink);background:var(--rule-soft);}
+  .tab[aria-selected="true"]{color:var(--paper);background:var(--ink);}
+  .tab .num{opacity:.65;font-variant-numeric:tabular-nums;margin-right:6px;}
+  .panel{display:none;}
+  .panel.active{display:block;}
+  .panelhead{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:18px 2px 12px;}
+  .panelhead h2{font-family:var(--serif);font-weight:600;font-size:21px;margin:0;}
+  .panelhead a.raw{font-size:12.5px;color:var(--ink);text-decoration:none;font-weight:600;border:1px solid var(--rule);border-radius:6px;padding:5px 11px;}
+  .panelhead a.raw:hover{background:var(--rule-soft);}
+  .frame{width:100%;height:78vh;min-height:520px;border:1px solid var(--rule);border-radius:8px;background:#fff;}
+  footer{max-width:1100px;margin:0 auto;padding:8px 24px 40px;color:var(--slate);font-size:12.5px;line-height:1.5;border-top:1px solid var(--rule-soft);}
+  footer strong{color:var(--ink);}
+</style>
+</head>
+<body>
+<header>
+  <p class="eyebrow">MCX AI Lab · Data Analysis with AI · Method Records</p>
+  <h1>The five-step method, end to end</h1>
+  <p class="lede">Each step of the analysis is recorded here — profiling, framing, analysis, independent verification, and design. Use the tabs to move between steps without leaving the page.</p>
+</header>
+<div class="wrap">
+  <div class="tabs" role="tablist" aria-label="Method steps">
+    <button class="tab" role="tab" aria-selected="true" aria-controls="p1" id="t1" onclick="showTab(1)"><span class="num">01</span>Explore</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="p2" id="t2" onclick="showTab(2)"><span class="num">02</span>Frame</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="p3" id="t3" onclick="showTab(3)"><span class="num">03</span>Analyze</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="p4" id="t4" onclick="showTab(4)"><span class="num">04</span>Verify</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="p5" id="t5" onclick="showTab(5)"><span class="num">05</span>Visualize</button>
+  </div>
+  <section class="panel active" id="p1" role="tabpanel" aria-labelledby="t1">
+    <div class="panelhead"><h2>Step 1 — Explore: Data Profile</h2><a class="raw" href="method/Step1_Explore_Data_Profile.pdf" target="_blank" rel="noopener">Open PDF ↗</a></div>
+    <iframe class="frame" src="method/Step1_Explore_Data_Profile.pdf#view=FitH" title="Step 1 Explore Data Profile"></iframe>
+  </section>
+  <section class="panel" id="p2" role="tabpanel" aria-labelledby="t2">
+    <div class="panelhead"><h2>Step 2 — Frame: Analysis Brief</h2><a class="raw" href="method/Step2_Frame_Analysis_Brief.pdf" target="_blank" rel="noopener">Open PDF ↗</a></div>
+    <iframe class="frame" src="method/Step2_Frame_Analysis_Brief.pdf#view=FitH" title="Step 2 Frame Analysis Brief"></iframe>
+  </section>
+  <section class="panel" id="p3" role="tabpanel" aria-labelledby="t3">
+    <div class="panelhead"><h2>Step 3 — Analyze: Method Record</h2><a class="raw" href="method/Step3_Analyze_Method_Record.pdf" target="_blank" rel="noopener">Open PDF ↗</a></div>
+    <iframe class="frame" src="method/Step3_Analyze_Method_Record.pdf#view=FitH" title="Step 3 Analyze Method Record"></iframe>
+  </section>
+  <section class="panel" id="p4" role="tabpanel" aria-labelledby="t4">
+    <div class="panelhead"><h2>Step 4 — Verify: Adversarial Review Record</h2><a class="raw" href="method/Step4_Verify_Adversarial_Review_Record.pdf" target="_blank" rel="noopener">Open PDF ↗</a></div>
+    <iframe class="frame" src="method/Step4_Verify_Adversarial_Review_Record.pdf#view=FitH" title="Step 4 Verify Adversarial Review Record"></iframe>
+  </section>
+  <section class="panel" id="p5" role="tabpanel" aria-labelledby="t5">
+    <div class="panelhead"><h2>Step 5 — Visualize: Design Record</h2><a class="raw" href="method/Step5_Visualize_Design_Record.pdf" target="_blank" rel="noopener">Open PDF ↗</a></div>
+    <iframe class="frame" src="method/Step5_Visualize_Design_Record.pdf#view=FitH" title="Step 5 Visualize Design Record"></iframe>
+  </section>
+</div>
+<footer><p><strong>MCX AI Lab: Data Analysis with AI.</strong> The dataset is synthetic, generated for this exercise. Each record is the original PDF, embedded here for convenience. If a step does not display inline, use the “Open PDF” link.</p></footer>
+<script>
+  function showTab(n){for(var i=1;i<=5;i++){var tab=document.getElementById('t'+i);var panel=document.getElementById('p'+i);var on=(i===n);tab.setAttribute('aria-selected',on?'true':'false');panel.classList.toggle('active',on);}}
+</script>
+</body>
+</html>
