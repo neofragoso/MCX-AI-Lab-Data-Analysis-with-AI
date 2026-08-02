@@ -14,6 +14,8 @@ What I wanted to test was the division of labour: AI produces the analysis, and 
 
 ### What's here
 
+**[Start here](https://neofragoso.github.io/MCX-AI-Lab-Data-Analysis-with-AI/)** — the project home page: the write-up, the dashboard, and the five method records, all in one place.
+
 - **[Case study (PDF)](case-study.pdf)** — one page. The five-step method, how the AI was used, and what the work does not claim. **Start here.**
 - **[The dashboard](https://neofragoso.github.io/MCX-AI-Lab-Data-Analysis-with-AI/dashboard.html)** — the finished analysis, with a summary layer and a detailed layer.
 - **[method/](https://neofragoso.github.io/MCX-AI-Lab-Data-Analysis-with-AI/method.html)** — the five step records in one place, tabbed by step, including the independent AI review and everything it withdrew.
