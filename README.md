@@ -15,7 +15,7 @@ What I wanted to test was the division of labour: AI produces the analysis, and 
 ### What's here
 
 - **[Case study (PDF)](case-study.pdf)** — one page. The five-step method, how the AI was used, and what the work does not claim. **Start here.**
-- **[The dashboard](https://neofragoso.github.io/Ai-Data-Analysis/dashboard.html)** — the finished analysis, with a summary layer and a detailed layer.
+- **[The dashboard](https://neofragoso.github.io/MCX-AI-Lab-Data-Analysis-with-AI/dashboard.html)** — the finished analysis, with a summary layer and a detailed layer.
 - **[method/](method/)** — the five step records, including the independent AI review and everything it withdrew.
 - **[skill/](skill/)** — the process packaged so it runs the same way on any dataset.
 - **[data/](data/)** — the synthetic register everything is built on.
