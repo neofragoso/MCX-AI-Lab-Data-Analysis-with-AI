@@ -223,6 +223,30 @@ code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;backgrou
 .step .d{font-size:10.5px;color:var(--slate);line-height:1.4}
 .step.hi{border-left:3px solid var(--crit)}
 @media (max-width:820px){.grid2,.steps{grid-template-columns:1fr}}
+
+  /* --- clickability affordances (added) --- */
+  .card, .step { cursor:pointer; transition:border-color .12s ease, background .12s ease, transform .12s ease, box-shadow .12s ease; }
+  .card { position:relative; padding-right:40px; }
+  .card::after {
+    content:"Open \2197";
+    position:absolute; right:16px; top:16px;
+    font-family:var(--sans); font-size:10px; font-weight:700;
+    letter-spacing:.08em; text-transform:uppercase; color:var(--crit);
+    opacity:.75;
+  }
+  .card:hover { transform:translateY(-1px); box-shadow:0 2px 10px rgba(20,33,61,.08); }
+  .card:hover::after { opacity:1; }
+  .card:hover h3 { text-decoration:underline; text-decoration-color:var(--crit); text-underline-offset:2px; }
+  .step { position:relative; }
+  .step::after {
+    content:"\2197";
+    position:absolute; right:8px; top:8px;
+    font-size:11px; font-weight:700; color:var(--crit); opacity:.55;
+  }
+  .step:hover { transform:translateY(-1px); box-shadow:0 2px 8px rgba(20,33,61,.08); border-color:var(--ink); }
+  .step:hover::after { opacity:1; }
+  .step:hover .t { text-decoration:underline; text-decoration-color:var(--crit); text-underline-offset:2px; }
+
 </style>
 </head>
 <body>
@@ -263,12 +287,12 @@ which is the difference between an output you can show and an output you can def
 <section class="ex">
   <div class="ex-head"><div><p class="ex-num">Start here</p><h2>Two ways in</h2></div></div>
   <div class="grid2">
-    <a class="card" href="case-study.pdf">
+    <a class="card" href="case-study.pdf" target="_blank" rel="noopener">
       <div class="tagline">The write-up</div>
       <h3>Case study &middot; one page</h3>
       <p>What the project was, the five steps and why each exists, how the AI was used, and what the work does not claim.</p>
     </a>
-    <a class="card" href="dashboard.html">
+    <a class="card" href="dashboard.html" target="_blank" rel="noopener">
       <div class="tagline">The artifact</div>
       <h3>Risk register dashboard</h3>
       <p>An executive layer that states the conclusions plainly, and an auditor layer that proves them. One computation run,
@@ -283,15 +307,15 @@ which is the difference between an output you can show and an output you can def
   after seeing the data, leaving my own work unchallenged, and drawing a picture that says more than the evidence does.
   <b>No step starts until the one before it is written down.</b></p>
   <div class="steps">
-    <a class="step" href="method/Step1_Explore_Data_Profile.pdf"><div class="n">Step 1</div>
+    <a class="step" href="method/Step1_Explore_Data_Profile.pdf" target="_blank" rel="noopener"><div class="n">Step 1</div>
       <div class="t">Explore</div><div class="d">Understand the population before touching it. Which columns are observed, and which are derived from others.</div></a>
-    <a class="step" href="method/Step2_Frame_Analysis_Brief.pdf"><div class="n">Step 2</div>
+    <a class="step" href="method/Step2_Frame_Analysis_Brief.pdf" target="_blank" rel="noopener"><div class="n">Step 2</div>
       <div class="t">Frame</div><div class="d">Fix the question in writing, including which population every figure is computed over.</div></a>
-    <a class="step" href="method/Step3_Analyze_Method_Record.pdf"><div class="n">Step 3</div>
+    <a class="step" href="method/Step3_Analyze_Method_Record.pdf" target="_blank" rel="noopener"><div class="n">Step 3</div>
       <div class="t">Analyze</div><div class="d">Run the work, and keep the record of what changed while running it.</div></a>
-    <a class="step hi" href="method/Step4_Verify_Adversarial_Review_Record.pdf"><div class="n">Step 4</div>
+    <a class="step hi" href="method/Step4_Verify_Adversarial_Review_Record.pdf" target="_blank" rel="noopener"><div class="n">Step 4</div>
       <div class="t">Verify</div><div class="d">Hand it to an adversary that does not know why I did what I did.</div></a>
-    <a class="step" href="method/Step5_Visualize_Design_Record.pdf"><div class="n">Step 5</div>
+    <a class="step" href="method/Step5_Visualize_Design_Record.pdf" target="_blank" rel="noopener"><div class="n">Step 5</div>
       <div class="t">Visualize</div><div class="d">Build only what survived, and design against the wrong conclusion.</div></a>
   </div>
   <div class="callout">
@@ -368,13 +392,13 @@ which is the difference between an output you can show and an output you can def
 <section class="ex">
   <div class="ex-head"><div><p class="ex-num">Reusable</p><h2>The method, packaged</h2></div></div>
   <div class="grid2">
-    <a class="card" href="skill/verified-data-analysis.skill">
+    <a class="card" href="skill/verified-data-analysis.skill" target="_blank" rel="noopener">
       <div class="tagline">Download</div>
       <h3>verified-data-analysis</h3>
       <p>The five-step process packaged to run on any dataset: profiling script, statistical guardrails, the blind reviewer
       brief, and a two-layer dashboard template.</p>
     </a>
-    <a class="card" href="data/grc_risk_register.csv">
+    <a class="card" href="data/grc_risk_register.csv" target="_blank" rel="noopener">
       <div class="tagline">Source</div>
       <h3>grc_risk_register.csv</h3>
       <p>The synthetic register everything is built on. 160 rows, 19 columns. Three of its fields are deliberately linked to
