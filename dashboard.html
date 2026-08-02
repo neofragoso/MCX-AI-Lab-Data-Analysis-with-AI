@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GRC Risk Register — Position &amp; Aged-Item Dashboard (Final)</title>
+<style>
+:root{
+  --ink:#14213D;
+  --paper:#FBFAF7;
+  --rule:#D9D4C6;
+  --rule-soft:#EAE6DC;
+  --slate:#5A6472;
+  --crit:#A32118;
+  --mat:#B26A00;
+  --watch:#6E6414;
+  --good:#1F6F4A;
+  --sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  --serif:Georgia,"Times New Roman",serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--sans);font-size:14px;line-height:1.5;
+  font-variant-numeric:tabular-nums;
+}
+.sheet{max-width:1080px;margin:0 auto;padding:40px 32px 64px}
+
+/* ---------- masthead ---------- */
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:18px}
+.eyebrow{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--slate);font-weight:700;margin:0 0 10px}
+.masthead h1{font-family:var(--serif);font-weight:400;font-size:34px;line-height:1.15;margin:0 0 12px;letter-spacing:-.01em}
+.standfirst{color:var(--slate);font-size:14px;margin:0 0 16px}
+.meta{display:flex;flex-wrap:wrap;gap:8px 28px;font-size:11px;color:var(--slate)}
+.meta b{color:var(--ink);font-weight:700}
+
+/* ---------- tabs ---------- */
+.tabs{display:none;gap:0;margin:26px 0 0;border-bottom:2px solid var(--ink)}
+/* .tabs is revealed by script; without scripting both sections render in sequence */
+#panel-divider{border-top:2px solid var(--ink);margin:48px 0 0;padding-top:18px}
+#panel-divider .eyebrow{margin-bottom:6px}
+#panel-divider h2{font-family:var(--serif);font-weight:400;font-size:26px;margin:0 0 6px}
+#panel-divider p{margin:0;font-size:13px;color:var(--slate)}
+.tab{
+  appearance:none;background:transparent;border:1px solid var(--rule);border-bottom:0;
+  font-family:var(--sans);font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--slate);padding:13px 24px;cursor:pointer;margin-right:4px;position:relative;top:1px;
+}
+.tab:hover{color:var(--ink);background:#fff}
+.tab[aria-selected="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.tab .sub{display:block;font-size:9.5px;font-weight:400;letter-spacing:.04em;text-transform:none;margin-top:3px;opacity:.8}
+.panel[hidden]{display:none}
+.panel{padding-top:8px}
+
+/* ---------- how to read ---------- */
+.howto{border:1px solid var(--rule);background:#fff;padding:16px 20px;margin:22px 0 0}
+.howto .h{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;margin-bottom:10px}
+.howto dl{margin:0;display:grid;grid-template-columns:180px 1fr;gap:9px 18px}
+.howto dt{font-weight:700;font-size:12px}
+.howto dd{margin:0;font-size:12.5px;color:var(--slate);line-height:1.45}
+
+/* ---------- ledger ---------- */
+.ledger{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--ink);padding:5px 10px}
+.frac{display:inline-flex;flex-direction:column;align-items:center;line-height:1}
+.frac .num{font-size:15px;font-weight:700}
+.frac .den{font-size:15px;font-weight:700;border-top:1.5px solid var(--ink);padding-top:2px;margin-top:2px}
+.ledger .lbl{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--slate);max-width:16ch;line-height:1.35}
+
+/* ---------- KPI band ---------- */
+.band{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--rule);border-left:3px solid var(--ink);margin:26px 0 8px;background:#fff}
+.tile{padding:16px 16px 14px;border-right:1px solid var(--rule-soft)}
+.tile:last-child{border-right:0}
+.tile .k{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--slate);font-weight:700;margin-bottom:7px}
+.tile .v{font-size:30px;font-weight:700;line-height:1;letter-spacing:-.02em}
+.tile .v small{font-size:14px;font-weight:700;letter-spacing:0}
+.tile .s{font-size:11px;color:var(--slate);margin-top:6px;line-height:1.35}
+.tile.flag .v{color:var(--crit)}
+.band-note{font-size:11.5px;color:var(--slate);margin:0 0 34px;line-height:1.55}
+
+/* ---------- exhibits ---------- */
+.ex{margin:0 0 38px;padding-top:22px;border-top:1px solid var(--rule)}
+.ex-head{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;margin-bottom:6px}
+.ex h2{font-family:var(--serif);font-weight:400;font-size:20px;margin:0;letter-spacing:-.01em}
+.ex-num{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--slate);font-weight:700;margin:0 0 4px}
+.lede{font-size:13.5px;color:var(--ink);margin:8px 0 18px}
+.lede b{font-weight:700}
+
+/* headline / takeaway */
+.takeaway{border-left:3px solid var(--ink);background:#fff;padding:12px 16px;margin:0 0 18px;font-size:13.5px;line-height:1.55}
+.takeaway .h{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--slate);font-weight:700;margin-bottom:5px}
+
+/* action list */
+.actions{border:1px solid var(--ink);border-left:3px solid var(--crit);background:#fff;padding:18px 22px;margin:26px 0 0}
+.actions .h{font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;margin-bottom:14px}
+.actions ol{margin:0;padding-left:20px}
+.actions li{font-size:13.5px;margin-bottom:13px;line-height:1.5}
+.actions li:last-child{margin-bottom:0}
+.actions li b{font-weight:700}
+.actions li em{font-style:normal;color:var(--slate);font-size:12px;display:block;margin-top:3px}
+
+/* technical footnote */
+.tech{font-size:10.5px;color:var(--slate);line-height:1.5;border-top:1px solid var(--rule-soft);padding-top:8px;margin-top:14px}
+.tech b{color:var(--slate);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:9px}
+
+/* bars */
+.rows{display:flex;flex-direction:column;gap:2px}
+.row{display:grid;grid-template-columns:210px 1fr 128px;align-items:center;gap:14px;padding:7px 0;border-bottom:1px solid var(--rule-soft)}
+.row:last-child{border-bottom:0}
+.row .name{font-size:12.5px;font-weight:700}
+.row .name span{display:block;font-weight:400;font-size:10.5px;color:var(--slate);margin-top:2px}
+.track{position:relative;height:22px;background:#fff;border:1px solid var(--rule-soft)}
+.fill{height:100%;width:var(--w);animation:grow .85s cubic-bezier(.2,.75,.25,1) both}
+.fill.c-crit{background:var(--crit)}
+.fill.c-mat{background:var(--mat)}
+.fill.c-watch{background:var(--watch)}
+.fill.c-good{background:var(--good)}
+.wh{position:absolute;top:50%;height:1px;background:var(--ink);opacity:.75;left:var(--lo);width:var(--ww)}
+.wh::before,.wh::after{content:"";position:absolute;top:-4px;height:9px;width:1px;background:var(--ink);opacity:.75}
+.wh::before{left:0}.wh::after{right:0}
+.val{text-align:right;font-size:13px;font-weight:700}
+.val span{display:block;font-weight:400;font-size:10.5px;color:var(--slate);margin-top:2px}
+@keyframes grow{from{width:0}to{width:var(--w)}}
+@media (prefers-reduced-motion:reduce){.fill{animation:none}}
+.scale{display:flex;justify-content:space-between;font-size:9.5px;color:var(--slate);margin-left:224px;margin-right:142px;padding-top:5px;border-top:1px solid var(--rule-soft)}
+
+/* stacked bar */
+.stack{display:flex;height:44px;border:1px solid var(--rule);margin-bottom:6px}
+.seg{display:flex;align-items:center;justify-content:center;color:#fff;font-size:11.5px;font-weight:700;animation:grow .85s cubic-bezier(.2,.75,.25,1) both;width:var(--w);min-width:0;overflow:hidden;white-space:nowrap}
+.seg.s1{background:var(--good)}.seg.s2{background:var(--watch)}.seg.s3{background:var(--crit)}
+.stack-key{display:flex;flex-wrap:wrap;gap:6px 26px;font-size:11px;color:var(--slate);margin-bottom:20px}
+.stack-key i{display:inline-block;width:9px;height:9px;margin-right:6px;font-style:normal}
+.k1{background:var(--good)}.k2{background:var(--watch)}.k3{background:var(--crit)}
+
+/* tables */
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{text-align:left;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--slate);font-weight:700;padding:0 10px 8px 0;border-bottom:1px solid var(--ink)}
+td{padding:9px 10px 9px 0;border-bottom:1px solid var(--rule-soft);vertical-align:top}
+td.num,th.num{text-align:right;padding-right:0}
+tr.tot td{border-top:1px solid var(--ink);border-bottom:0;font-weight:700}
+tr.sub td{background:#fff}
+.id{font-weight:700;letter-spacing:-.01em}
+.tag{display:inline-block;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;padding:2px 6px;border:1px solid currentColor}
+.t-crit{color:var(--crit)}.t-mat{color:var(--mat)}.t-watch{color:var(--watch)}.t-good{color:var(--good)}
+.thin{font-size:9.5px;color:var(--slate);font-weight:400}
+code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;background:#fff;border:1px solid var(--rule-soft);padding:1px 4px}
+
+/* matrix */
+.mx{width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:6px}
+.mx th{text-align:center;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--slate);font-weight:700;padding:0 6px 8px;border-bottom:1px solid var(--ink)}
+.mx th.rowh{text-align:left}
+.mx td{text-align:center;padding:10px 6px;border-bottom:1px solid var(--rule-soft);vertical-align:middle}
+.mx td.rowh{text-align:left;font-weight:700;font-size:12px}
+.mx .cell{font-weight:700;font-size:13px;display:block}
+.mx .base{font-weight:400;font-size:10px;color:var(--slate);display:block;margin-top:1px}
+.hi-good{background:#EDF5F0}.hi-mid{background:#FBF3E4}.hi-bad{background:#F8EBEA}
+.mx td.na{color:var(--slate);font-weight:400}
+
+/* callout */
+.callout{border-left:3px solid var(--crit);background:#fff;padding:14px 18px;margin:20px 0 0}
+.callout .h{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--crit);font-weight:700;margin-bottom:6px}
+.callout p{margin:0 0 8px;font-size:13px;line-height:1.55}
+.callout p:last-child{margin-bottom:0}
+.caveat{border-left-color:var(--slate)}.caveat .h{color:var(--slate)}
+.resolved{border-left-color:var(--good)}.resolved .h{color:var(--good)}
+
+/* boundary */
+.boundary{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--rule);background:#fff;margin-top:6px}
+.boundary>div{padding:18px 20px}
+.boundary>div:first-child{border-right:1px solid var(--rule)}
+.boundary h3{font-size:10px;letter-spacing:.12em;text-transform:uppercase;margin:0 0 12px;font-weight:700}
+.boundary ul{margin:0;padding-left:16px}
+.boundary li{font-size:12.5px;margin-bottom:9px;line-height:1.45}
+.boundary li:last-child{margin-bottom:0}
+.does h3{color:var(--good)}.doesnt h3{color:var(--crit)}
+
+/* footer */
+.foot{border-top:2px solid var(--ink);margin-top:44px;padding-top:16px;font-size:11px;color:var(--slate);line-height:1.6}
+.foot b{color:var(--ink)}
+.foot p{margin:0 0 8px}
+
+@media (max-width:820px){
+  .sheet{padding:28px 18px 48px}
+  .tabs{flex-direction:column;border-bottom:0}
+  .tab{margin:0 0 4px;border:1px solid var(--rule);top:0}
+  .band{grid-template-columns:1fr 1fr}
+  .tile{border-bottom:1px solid var(--rule-soft)}
+  .row{grid-template-columns:1fr;gap:6px}
+  .track{height:18px}
+  .val{text-align:left}
+  .scale{margin:0;padding-top:6px}
+  .boundary{grid-template-columns:1fr}
+  .boundary>div:first-child{border-right:0;border-bottom:1px solid var(--rule)}
+  .masthead h1{font-size:26px}
+  .howto dl{grid-template-columns:1fr;gap:2px 0}
+  .howto dd{margin-bottom:8px}
+  .mx{font-size:11px}
+  .mx td,.mx th{padding-left:2px;padding-right:2px}
+}
+@media print{
+  body{background:#fff}
+  .sheet{max-width:none;padding:0}
+  .fill,.seg{animation:none}
+  .ex{page-break-inside:avoid}
+  .tabs{display:none}
+  .panel[hidden]{display:block !important}
+  .panel{page-break-before:always}
+}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<header class="masthead">
+  <p class="eyebrow">GRC Risk Register &nbsp;·&nbsp; Remediation &amp; Aged-Item Review &nbsp;·&nbsp; Exhibit Pack</p>
+  <h1>Risk register position and aged-item exposure</h1>
+  <p class="standfirst">A snapshot of where the 160-item register stands, how long past-due items have been outstanding, and how much financial exposure sits in each state. This pack describes the position. It does not set thresholds or propose remediation. <b>The dataset is synthetic, generated for this exercise. This pack demonstrates a method; the figures describe this register and are not evidence about how controls behave in a real institution.</b></p>
+  <div class="meta">
+    <span><b>As of</b> 30 June 2026</span>
+    <span><b>Population</b> 160 items</span>
+    <span><b>Book exposure</b> $147.0M</span>
+    <span><b>Basis</b> Cross-sectional</span>
+    <span><b>Status</b> Final — independently verified</span>
+  </div>
+</header>
+
+<div class="tabs" role="tablist">
+  <button class="tab" role="tab" id="tab-exec" aria-controls="panel-exec" aria-selected="true">
+    Executive Summary<span class="sub">Position, priorities and items to watch</span>
+  </button>
+  <button class="tab" role="tab" id="tab-audit" aria-controls="panel-audit" aria-selected="false">
+    Auditor Detail<span class="sub">Method, derivations and full workings</span>
+  </button>
+</div>
+
+<!-- ==================================================================== -->
+<!-- ============================ EXEC PANEL ============================ -->
+<!-- ==================================================================== -->
+<div class="panel" id="panel-exec" role="tabpanel" aria-labelledby="tab-exec">
+
+<section class="band">
+  <div class="tile">
+    <div class="k">Closed</div>
+    <div class="v">117</div>
+    <div class="s">$88.4M &nbsp;·&nbsp; 78% of those that faced a deadline closed on time</div>
+  </div>
+  <div class="tile">
+    <div class="k">Open, not yet due</div>
+    <div class="v">10</div>
+    <div class="s">$16.5M &nbsp;·&nbsp; cannot be late at this snapshot</div>
+  </div>
+  <div class="tile flag">
+    <div class="k">Past due now</div>
+    <div class="v">33</div>
+    <div class="s">$42.1M &nbsp;·&nbsp; 29% of book exposure on 21% of items</div>
+  </div>
+  <div class="tile flag">
+    <div class="k">Ever missed deadline</div>
+    <div class="v">44<small>%</small></div>
+    <div class="s">51 of the 116 items that faced a deadline</div>
+  </div>
+  <div class="tile flag">
+    <div class="k">Median time past due</div>
+    <div class="v">305<small> days</small></div>
+    <div class="s">Longest outstanding item: 523 days</div>
+  </div>
+</section>
+<p class="band-note"><b>On the two deadline figures.</b> 33 items are past due <i>today</i>. But 51 items missed their deadline <i>at some point</i> — the other 18 were completed late and then closed. The register stops counting a breach once an item closes, so the second figure is the one that describes how reliably commitments are being met. Both are shown deliberately.</p>
+
+<div class="takeaway">
+  <div class="h">The bottom line</div>
+  Deadline performance is not evenly distributed and it is not random. <b>It tracks almost entirely with whether the underlying control has been tested and found effective.</b> Where controls are confirmed effective, items close on time 94% of the time. Where they are not — including where they have simply never been tested — items go past due roughly half the time. Nothing else in the register comes close to explaining outcomes this well: not the department, not who owns the item, not how it was identified, and not its risk tier.
+</div>
+
+<!-- ---------- E1 ---------- -->
+<section class="ex">
+  <div class="ex-head">
+    <div><p class="ex-num">Exhibit 1</p><h2>Where the book stands</h2></div>
+    <div class="ledger"><div class="frac"><span class="num">160</span><span class="den">160</span></div><span class="lbl">All items —<br>no exclusions</span></div>
+  </div>
+  <p class="lede">Past-due items are <b>21% of the register by count but 29% of it by exposure</b>. The dollars are more concentrated in the past-due population than the item count alone suggests.</p>
+  <div class="stack">
+    <div class="seg s1" style="--w:73.1%">Closed · 117 items · $88.4M</div>
+    <div class="seg s2" style="--w:6.3%">10 · $16.5M</div>
+    <div class="seg s3" style="--w:20.6%">Past due · 33 · $42.1M</div>
+  </div>
+  <div class="stack-key">
+    <span><i class="k1"></i>Closed (117)</span>
+    <span><i class="k2"></i>Open, not yet due (10)</span>
+    <span><i class="k3"></i>Past due (33)</span>
+    <span>Segment width = share of item count</span>
+  </div>
+  <div class="callout caveat">
+    <div class="h">One caution on the dollar figures</div>
+    <p>Financial exposure in this register is assigned in bands that follow risk tier — Critical items are always the large-dollar items by construction. Exposure is therefore a reliable measure of <b>how much is sitting in each state</b>, but it is not independent evidence about anything. Where a dollar figure appears in this pack, it is restating a tier figure in different units.</p>
+  </div>
+</section>
+
+<!-- ---------- E2 ---------- -->
+<section class="ex">
+  <div class="ex-head">
+    <div><p class="ex-num">Exhibit 2 — lead finding</p><h2>An untested control is not a neutral state</h2></div>
+    <div class="ledger"><div class="frac"><span class="num">33</span><span class="den">116</span></div><span class="lbl">Items that<br>faced a deadline</span></div>
+  </div>
+  <div class="takeaway">
+    <div class="h">In one line</div>
+    Items whose control has <b>never been tested</b> miss deadlines just as often as items whose control has been tested and found weak. "Not Tested" is being carried as a neutral, pending state. It is not behaving like one.
+  </div>
+  <p class="lede">Items with a <b>Not Tested</b> control go past due 42.1% of the time. Items already rated <b>Partially Effective</b> go past due 42.4% of the time. There is <b>no measurable difference between them</b>. By contrast, items with a control confirmed <b>Effective</b> go past due only 5.6% of the time.</p>
+
+  <div class="rows">
+    <div class="row">
+      <div class="name">Effective<span>54 items faced a deadline</span></div>
+      <div class="track"><div class="fill c-good" style="--w:5.6%"></div><div class="wh" style="--lo:1%;--ww:14%"></div></div>
+      <div class="val">5.6%<span>3 past due</span></div>
+    </div>
+    <div class="row">
+      <div class="name">Partially Effective<span>33 items faced a deadline</span></div>
+      <div class="track"><div class="fill c-mat" style="--w:42.4%"></div><div class="wh" style="--lo:25%;--ww:36%"></div></div>
+      <div class="val">42.4%<span>14 past due</span></div>
+    </div>
+    <div class="row">
+      <div class="name">Not Tested<span>19 items faced a deadline</span></div>
+      <div class="track"><div class="fill c-mat" style="--w:42.1%"></div><div class="wh" style="--lo:20%;--ww:47%"></div></div>
+      <div class="val">42.1%<span>8 past due</span></div>
+    </div>
+    <div class="row">
+      <div class="name">Ineffective<span>10 items faced a deadline</span></div>
+      <div class="track"><div class="fill c-crit" style="--w:80%"></div><div class="wh" style="--lo:44%;--ww:53%"></div></div>
+      <div class="val">80.0%<span>8 past due</span></div>
+    </div>
+  </div>
+  <div class="scale"><span>0%</span><span>50%</span><span>100% past due</span></div>
+
+  <div class="callout">
+    <div class="h">The obvious objection, and the answer</div>
+    <p>You could reasonably argue this is really about difficulty rather than controls: high-risk items are harder to fix,
+    and they also tend to have weaker controls, so the rating might just be standing in for how hard the work is.</p>
+    <p>I checked. Splitting the items by risk level and looking at each level on its own, the pattern still holds &mdash; and it
+    is widest where the stakes are highest. <b>Among the 18 high-risk items with a control confirmed effective, none are past
+    due. Among the 23 high-risk items without one, 15 are.</b> The full working is in the Auditor Detail tab.</p>
+  </div>
+
+  <div class="callout caveat">
+    <div class="h">A separate issue worth flagging</div>
+    <p><b>17 items were closed while nobody had tested whether their control actually worked.</b> Those closures have no
+    evidence behind them either way.</p>
+  </div>
+</section>
+
+<!-- ---------- E3 ---------- -->
+<section class="ex">
+  <div class="ex-head">
+    <div><p class="ex-num">Exhibit 3</p><h2>The exposure sits in the oldest items</h2></div>
+    <div class="ledger"><div class="frac"><span class="num">33</span><span class="den">33</span></div><span class="lbl">Past-due<br>items only</span></div>
+  </div>
+  <p class="lede"><b>21 of the 33 past-due items have been outstanding beyond 180 days, and they carry $39.8M — 94.6% of all past-due exposure.</b> Recently-lapsed items are numerous but small. The money is in the long tail, and the long tail is not moving.</p>
+
+  <div class="rows">
+    <div class="row"><div class="name">Under 90 days<span>7 items</span></div><div class="track"><div class="fill c-watch" style="--w:4.3%"></div></div><div class="val">$0.98M<span>2.3% of past-due $</span></div></div>
+    <div class="row"><div class="name">90 – 180 days<span>5 items</span></div><div class="track"><div class="fill c-watch" style="--w:5.6%"></div></div><div class="val">$1.28M<span>3.0% of past-due $</span></div></div>
+    <div class="row"><div class="name">180 – 365 days<span>9 items</span></div><div class="track"><div class="fill c-crit" style="--w:100%"></div></div><div class="val">$22.98M<span>54.6% of past-due $</span></div></div>
+    <div class="row"><div class="name">Over 365 days<span>12 items</span></div><div class="track"><div class="fill c-crit" style="--w:73.3%"></div></div><div class="val">$16.84M<span>40.0% of past-due $</span></div></div>
+  </div>
+  <div class="scale"><span>$0</span><span>$11.5M</span><span>$23M exposure</span></div>
+</section>
+
+<!-- ---------- E4 ---------- -->
+<section class="ex">
+  <div class="ex-head">
+    <div><p class="ex-num">Exhibit 4</p><h2>The six items to keep an eye on</h2></div>
+    <div class="ledger"><div class="frac"><span class="num">6</span><span class="den">33</span></div><span class="lbl">Top items<br>by exposure</span></div>
+  </div>
+  <p class="lede">These six account for <b>$27.5M — 65% of all past-due exposure</b>. All six are High or Critical tier, all six have been outstanding more than eight months, and four of the six are concentrated in two departments.</p>
+  <table>
+    <thead><tr><th>Item</th><th>Department</th><th>Tier</th><th>Control rating</th><th class="num">Days past due</th><th class="num">Exposure</th></tr></thead>
+    <tbody>
+      <tr><td class="id">GRC-2024-0138</td><td>Retail Banking</td><td><span class="tag t-crit">Critical</span></td><td>Not Tested</td><td class="num">474</td><td class="num">$7.40M</td></tr>
+      <tr><td class="id">GRC-2025-0079</td><td>Commercial Lending</td><td><span class="tag t-crit">Critical</span></td><td>Ineffective</td><td class="num">257</td><td class="num">$7.12M</td></tr>
+      <tr><td class="id">GRC-2025-0043</td><td>Wealth Management</td><td><span class="tag t-crit">Critical</span></td><td>Partially Effective</td><td class="num">299</td><td class="num">$6.50M</td></tr>
+      <tr><td class="id">GRC-2025-0156</td><td>Retail Banking</td><td><span class="tag t-crit">Critical</span></td><td>Ineffective</td><td class="num">305</td><td class="num">$3.00M</td></tr>
+      <tr><td class="id">GRC-2024-0100</td><td>Retail Banking</td><td><span class="tag t-mat">High</span></td><td>Ineffective</td><td class="num">499</td><td class="num">$1.76M</td></tr>
+      <tr><td class="id">GRC-2024-0126</td><td>Financial Crimes (AML/BSA)</td><td><span class="tag t-mat">High</span></td><td>Not Tested</td><td class="num">464</td><td class="num">$1.72M</td></tr>
+      <tr class="tot"><td colspan="4">Six items</td><td class="num">—</td><td class="num">$27.50M</td></tr>
+    </tbody>
+  </table>
+  <p class="lede" style="margin-top:14px">Median exposure across all 33 past-due items is $484K, so this table is the extreme tail rather than the typical item. Three of the four Critical items above sit above $6M each.</p>
+</section>
+
+<!-- ---------- ACTIONS ---------- -->
+<div class="actions">
+  <div class="h">What the data points leadership toward</div>
+  <ol>
+    <li><b>Treat "Not Tested" as a finding, not a placeholder.</b> Nineteen items carrying an untested control faced a deadline and eight are past due — the same failure rate as controls already known to be weak. A further 17 items were closed with no test evidence at all.
+      <em>The register currently gives "Not Tested" the visual weight of a neutral status. The data does not support that treatment.</em></li>
+    <li><b>The $39.8M in items older than 180 days is where attention pays.</b> Twenty-one items hold 94.6% of past-due exposure. The recently-lapsed population is numerous but carries $2.3M in total.
+      <em>Effort spread evenly across all 33 past-due items would be misallocated by roughly twenty to one.</em></li>
+    <li><b>Top-tier items do not slip more often — but when they slip, they stay slipped.</b> Critical and High items go past due at broadly the same rate as Medium and Low. What separates them is duration: a median of roughly a year outstanding, against ten weeks at Low tier.
+      <em>This points at escalation and follow-through after a breach, not at prevention before one.</em></li>
+    <li><b>Do not read department, owner or identification-source rankings as performance.</b> Those differences are within ordinary variation for groups this size and cannot support a conclusion about any named team.
+      <em>Detail and testing in the Auditor tab.</em></li>
+    <li><b>One register change is recommended.</b> The system zeroes the overdue counter when an item closes, which hides every breach that was eventually cured — 18 of them here.
+      <em>Adding a permanent "days late at closure" field would make deadline performance visible without re-deriving it each cycle.</em></li>
+  </ol>
+</div>
+
+<!-- ---------- SCOPE ---------- -->
+<section class="ex" style="margin-top:38px">
+  <div class="ex-head"><div><p class="ex-num">Scope</p><h2>What this pack establishes, and what it does not</h2></div></div>
+  <div class="boundary">
+    <div class="does">
+      <h3>Supported</h3>
+      <ul>
+        <li>The current position of the register by state, item count and exposure.</li>
+        <li>How long past-due items have been outstanding and where the exposure concentrates.</li>
+        <li><b>That control effectiveness predicts on-time closure</b> — and that it holds inside every risk tier examined separately.</li>
+        <li><b>That an untested control performs no better than one already found weak.</b></li>
+        <li>That 51 of 116 items with a deadline missed it, 18 of which were later closed.</li>
+        <li>That higher-tier items which slip stay unresolved substantially longer.</li>
+      </ul>
+    </div>
+    <div class="doesnt">
+      <h3>Not supported</h3>
+      <ul>
+        <li><b>Any difference by department, owner role or identification source.</b> All three fall within ordinary variation.</li>
+        <li><b>That risk tier predicts whether an item goes past due.</b> Critical and High are indistinguishable from each other and from the lower tiers.</li>
+        <li><b>That exposure drives outcomes.</b> Exposure is banded from tier, so any dollar pattern restates a tier pattern.</li>
+        <li><b>Whether performance is improving.</b> This is a single snapshot; measuring change requires a second.</li>
+        <li><b>Whether the breach rate is acceptable.</b> No internal threshold or external benchmark exists in this data and none has been assumed.</li>
+        <li><b>What should be done.</b> This pack describes the position. Setting tolerances and directing remediation sits with leadership.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</div><!-- /panel-exec -->
+
+<div id="panel-divider">
+  <p class="eyebrow">Part 2 of 2</p>
+  <h2>Auditor Detail</h2>
+  <p>Method, derivations, statistical basis and full workings supporting the summary above.</p>
+</div>
+
+<!-- ==================================================================== -->
+<!-- =========================== AUDIT PANEL ============================ -->
+<!-- ==================================================================== -->
+<div class="panel" id="panel-audit" role="tabpanel" aria-labelledby="tab-audit">
+
+<div class="howto">
+  <div class="h">Conventions used throughout this tab</div>
+  <dl>
+    <dt>"Faced a deadline"</dt>
+    <dd>An item whose <code>Due_Date</code> fell on or before the 30 June 2026 snapshot. Items not yet due cannot be late and are excluded from every timeliness measure. 116 of 160 items qualify.</dd>
+    <dt>Confidence interval (CI)</dt>
+    <dd>Clopper–Pearson exact 95% interval. Written "CI 25–61%". Where two groups' intervals overlap substantially, the observed difference does not support a conclusion.</dd>
+    <dt>"Thin base"</dt>
+    <dd>Fewer than 20 items in the group. Applied mechanically to every group in this pack, without exception.</dd>
+    <dt>"Within ordinary variation"</dt>
+    <dd>The between-group differences are no larger than chance allocation would routinely produce. Reported with the test statistic and p-value in each case.</dd>
+  </dl>
+</div>
+
+<!-- ---------- A0 POPULATION ---------- -->
+<section class="ex">
+  <div class="ex-head"><div><p class="ex-num">Section A</p><h2>Population reconciliation and denominator policy</h2></div></div>
+  <p class="lede">Every denominator used in this pack derives from the reconciliation below. The register contains six status values, collapsed into three analytical states.</p>
+
+  <table>
+    <thead><tr><th>Register status</th><th>Analytical state</th><th class="num">Items</th><th class="num">Due date passed</th><th class="num">Not yet due</th><th class="num">Exposure</th></tr></thead>
+    <tbody>
+      <tr><td>Closed — Validated</td><td rowspan="2">Closed</td><td class="num">61</td><td class="num" rowspan="2">83</td><td class="num" rowspan="2">34</td><td class="num" rowspan="2">$88.43M</td></tr>
+      <tr><td>Closed</td><td class="num">56</td></tr>
+      <tr><td>Open</td><td rowspan="3">Open, not yet due</td><td class="num">4</td><td class="num" rowspan="3">0</td><td class="num" rowspan="3">10</td><td class="num" rowspan="3">$16.46M</td></tr>
+      <tr><td>In Progress</td><td class="num">3</td></tr>
+      <tr><td>Remediation In Progress</td><td class="num">3</td></tr>
+      <tr><td>Past Due</td><td>Past due</td><td class="num">33</td><td class="num">33</td><td class="num">0</td><td class="num">$42.08M</td></tr>
+      <tr class="tot"><td>Total</td><td>—</td><td class="num">160</td><td class="num">116</td><td class="num">44</td><td class="num">$146.97M</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout caveat">
+    <div class="h">The 34-item adjustment — why the on-time rate is 78.3% and not 85%</div>
+    <p>Of the 117 closed items, <b>34 closed before their due date had arrived</b>. Those items had no opportunity to be late. Including them in an on-time closure rate inflates it, because they enter both numerator and denominator as automatic successes.</p>
+    <p>The on-time rate reported in this pack uses only the <b>83 closed items that faced a deadline</b>, of which 65 closed on or before the due date and 18 closed late:</p>
+    <table style="margin-top:10px">
+      <thead><tr><th>Basis</th><th class="num">Calculation</th><th class="num">Result</th><th>Treatment</th></tr></thead>
+      <tbody>
+        <tr><td>Closed items that faced a deadline</td><td class="num">65 ÷ 83</td><td class="num"><b>78.3%</b></td><td>Reported</td></tr>
+        <tr><td>All closed items</td><td class="num">99 ÷ 117</td><td class="num">84.6%</td><td>Rejected — includes 34 items that could not be late</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <div class="h">Known limitation in the source register — and the recommended fix</div>
+    <p>The <code>Days_Overdue</code> field is <b>reset to zero when an item closes</b>. All 18 items that closed late (1 to 59 days, median 22) carry <code>Days_Overdue = 0</code>. Any breach measure taken from that field alone counts only items <i>currently</i> past due and silently forgives every breach that was subsequently cured.</p>
+    <table style="margin-top:10px">
+      <thead><tr><th>Breach measure</th><th class="num">Basis</th><th class="num">Rate</th><th class="num">95% CI</th></tr></thead>
+      <tbody>
+        <tr><td>Past due, share of full register</td><td class="num">33 ÷ 160</td><td class="num">20.6%</td><td class="num">14.6–27.7%</td></tr>
+        <tr><td>Past due, share of deadline-facing items</td><td class="num">33 ÷ 116</td><td class="num">28.4%</td><td class="num">20.5–37.6%</td></tr>
+        <tr class="tot"><td><b>Ever missed deadline</b> (incl. 18 closed late)</td><td class="num">51 ÷ 116</td><td class="num"><b>44.0%</b></td><td class="num">34.8–53.5%</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:10px">Understatement from relying on <code>Days_Overdue</code> alone: <b>15.5 percentage points</b>. Historical lateness must be reconstructed as <code>Closed_Date − Due_Date</code>. <b>Recommended schema change: add a persistent <code>Days_Late_At_Closure</code> field</b> so a missed deadline remains auditable after closure.</p>
+  </div>
+
+  <p class="tech"><b>Derived fields</b> · <code>eligible</code> = <code>Due_Date ≤ 2026-06-30</code> · <code>past_due</code> = <code>Status = "Past Due"</code> · <code>closed</code> = <code>Status</code> begins "Closed" · <code>late_days</code> = <code>Closed_Date − Due_Date</code> (closed items only) · <code>ever_breached</code> = <code>past_due OR late_days &gt; 0</code> · <code>deadline_window</code> = <code>Due_Date − Date_Identified</code> · <code>overrun_ratio</code> = <code>Days_Overdue ÷ deadline_window</code>. Source: <code>grc_risk_register.csv</code>, 160 rows × 19 fields, no duplicate <code>Item_ID</code> or <code>Control_ID</code>, one null field only (<code>Closed_Date</code>, 43 nulls, all non-closed items). <code>Residual_Risk_Score ≤ Inherent_Risk_Score</code> holds for all 160 rows.</p>
+</section>
+
+<!-- ---------- A1 NON-INDEPENDENCE ---------- -->
+<section class="ex">
+  <div class="ex-head"><div><p class="ex-num">Section B</p><h2>Structural dependencies between fields</h2></div></div>
+  <p class="lede">Three fields in this register are not independent of one another. Any analysis treating them as separate evidence would double-count. This is stated before the exhibits because it constrains what several of them can claim.</p>
+
+  <table>
+    <thead><tr><th>Risk tier</th><th class="num">Inherent risk score</th><th class="num">Exposure — minimum</th><th class="num">Exposure — maximum</th><th class="num">Exposure — median</th><th class="num">Items</th></tr></thead>
+    <tbody>
+      <tr><td><span class="tag t-good">Low</span></td><td class="num">3 – 7</td><td class="num">$5K</td><td class="num">$69K</td><td class="num">$38K</td><td class="num">31</td></tr>
+      <tr><td><span class="tag t-watch">Medium</span></td><td class="num">8 – 13</td><td class="num">$77K</td><td class="num">$441K</td><td class="num">$242K</td><td class="num">62</td></tr>
+      <tr><td><span class="tag t-mat">High</span></td><td class="num">14 – 19</td><td class="num">$433K</td><td class="num">$1.76M</td><td class="num">$970K</td><td class="num">52</td></tr>
+      <tr><td><span class="tag t-crit">Critical</span></td><td class="num">20 – 24</td><td class="num">$2.97M</td><td class="num">$7.89M</td><td class="num">$5.51M</td><td class="num">15</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout caveat">
+    <div class="h">Consequence for interpretation</div>
+    <p>Risk tier is a <b>deterministic banding of the inherent risk score</b> — the score ranges do not overlap at any boundary. Financial exposure is banded the same way, with near-disjoint ranges across tiers.</p>
+    <p>Therefore: <b>exposure carries no information independent of tier.</b> A statement such as "$24.0M of past-due exposure sits in Critical items" is a restatement of "Critical items are the expensive ones by construction." Exposure is retained throughout this pack to size the position and is never used as evidence of behaviour.</p>
+    <p class="tech"><b>Statistical basis</b> · Spearman rank correlation between <code>Financial_Exposure_USD</code> and <code>Inherent_Risk_Score</code> = 0.89. Tier boundaries map one-to-one onto score ranges with no overlap.</p>
+  </div>
+</section>
+
+<!-- ---------- A2 CONTROL ---------- -->
+<section class="ex">
+  <div class="ex-head">
+    <div><p class="ex-num">Exhibit A1 — lead finding</p><h2>Control effectiveness and on-time closure</h2></div>
+    <div class="ledger"><div class="frac"><span class="num">33</span><span class="den">116</span></div><span class="lbl">Items that<br>faced a deadline</span></div>
+  </div>
+  <p class="lede">The association between control effectiveness rating and on-time closure is the only relationship in this register that survives testing. It is strong, and it is not attributable to chance.</p>
+
+  <table>
+    <thead><tr><th>Control rating</th><th class="num">Faced deadline</th><th class="num">Past due</th><th class="num">Rate</th><th class="num">95% CI</th><th class="num">Ever missed</th><th class="num">Past-due exposure</th></tr></thead>
+    <tbody>
+      <tr><td><span class="tag t-good">Effective</span></td><td class="num">54</td><td class="num">3</td><td class="num">5.6%</td><td class="num">1 – 15%</td><td class="num">27.8%</td><td class="num">$0.50M</td></tr>
+      <tr><td><span class="tag t-mat">Partially Effective</span></td><td class="num">33</td><td class="num">14</td><td class="num">42.4%</td><td class="num">25 – 61%</td><td class="num">48.5%</td><td class="num">$16.74M</td></tr>
+      <tr><td><span class="tag t-mat">Not Tested</span> <span class="thin">thin</span></td><td class="num">19</td><td class="num">8</td><td class="num">42.1%</td><td class="num">20 – 67%</td><td class="num">57.9%</td><td class="num">$11.82M</td></tr>
+      <tr><td><span class="tag t-crit">Ineffective</span> <span class="thin">thin</span></td><td class="num">10</td><td class="num">8</td><td class="num">80.0%</td><td class="num">44 – 97%</td><td class="num">90.0%</td><td class="num">$13.01M</td></tr>
+      <tr class="tot"><td>All</td><td class="num">116</td><td class="num">33</td><td class="num">28.4%</td><td class="num">21 – 38%</td><td class="num">44.0%</td><td class="num">$42.08M</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <div class="h">Three separate conclusions, at three different confidence levels</div>
+    <p><b>1. High confidence — the association exists.</b> Across the four ratings the relationship is far stronger than chance would produce.</p>
+    <p><b>2. High confidence — "Not Tested" performs like "Partially Effective."</b> 42.1% against 42.4%, with no detectable difference between them. An untested control is not behaving as a neutral or pending state in this population.</p>
+    <p><b>3. Low confidence on magnitude.</b> The Effective-to-Ineffective spread is approximately fourteen-fold, but rests on a ten-item base with a confidence interval of 44–97%. A single item moving shifts the multiple between roughly twelve-fold and sixteen-fold. The direction is certain; the multiple should not be quoted as a precise figure.</p>
+    <p><b>Separate observation.</b> 17 items were closed while their control was still rated Not Tested. Those closures carry no effectiveness evidence. No inference is drawn here about their failure rate: closed and past-due items are not exchangeable populations, and an item may have closed because its control functioned.</p>
+    <p class="tech"><b>Statistical basis</b> · Four-group association χ² = 31.87, df = 3, p = 5.6 × 10⁻⁷. Not Tested vs Partially Effective, Fisher exact p = 1.00. Effective vs Ineffective, Fisher exact p = 1.5 × 10⁻⁶. Intervals are Clopper–Pearson exact.</p>
+  </div>
+</section>
+
+<!-- ---------- A3 STRATIFIED ---------- -->
+<section class="ex">
+  <div class="ex-head">
+    <div><p class="ex-num">Exhibit A2</p><h2>Control effectiveness, stratified by risk tier</h2></div>
+    <div class="ledger"><div class="frac"><span class="num">33</span><span class="den">116</span></div><span class="lbl">Stratified<br>by tier</span></div>
+  </div>
+  <p class="lede">The obvious challenge to Exhibit A1 is confounding: higher-tier items may be both more likely to carry a weak control and inherently harder to remediate, in which case control rating would merely be standing in for tier. This exhibit tests that by holding tier constant. <b>The association survives.</b></p>
+
+  <table class="mx">
+    <thead><tr><th class="rowh">Past-due rate, by control rating within tier</th><th>Low</th><th>Medium</th><th>High</th><th>Critical</th></tr></thead>
+    <tbody>
+      <tr><td class="rowh">Effective</td>
+        <td class="hi-good"><span class="cell">10.0%</span><span class="base">1 of 10</span></td>
+        <td class="hi-good"><span class="cell">9.5%</span><span class="base">2 of 21</span></td>
+        <td class="hi-good"><span class="cell">0.0%</span><span class="base">0 of 18</span></td>
+        <td class="hi-good"><span class="cell">0.0%</span><span class="base">0 of 5</span></td></tr>
+      <tr><td class="rowh">Partially Effective</td>
+        <td class="hi-mid"><span class="cell">28.6%</span><span class="base">2 of 7</span></td>
+        <td class="hi-mid"><span class="cell">30.0%</span><span class="base">3 of 10</span></td>
+        <td class="hi-bad"><span class="cell">61.5%</span><span class="base">8 of 13</span></td>
+        <td class="hi-mid"><span class="cell">33.3%</span><span class="base">1 of 3</span></td></tr>
+      <tr><td class="rowh">Not Tested</td>
+        <td class="na"><span class="cell">0.0%</span><span class="base">0 of 2</span></td>
+        <td class="hi-mid"><span class="cell">22.2%</span><span class="base">2 of 9</span></td>
+        <td class="hi-bad"><span class="cell">71.4%</span><span class="base">5 of 7</span></td>
+        <td class="na"><span class="cell">100%</span><span class="base">1 of 1</span></td></tr>
+      <tr><td class="rowh">Ineffective</td>
+        <td class="na"><span class="cell">100%</span><span class="base">1 of 1</span></td>
+        <td class="hi-bad"><span class="cell">100%</span><span class="base">3 of 3</span></td>
+        <td class="hi-bad"><span class="cell">66.7%</span><span class="base">2 of 3</span></td>
+        <td class="hi-bad"><span class="cell">66.7%</span><span class="base">2 of 3</span></td></tr>
+    </tbody>
+  </table>
+  <p class="band-note">Splitting 116 items across sixteen cells leaves several holding one or two items. <b>No individual cell is a finding.</b> The matrix is published for transparency and reproducibility; the conclusion rests on the collapsed comparison below, which uses substantially larger groups.</p>
+
+  <table>
+    <thead><tr><th>Within tier</th><th class="num">Effective — past due</th><th class="num">Not rated Effective — past due</th><th class="num">Gap</th></tr></thead>
+    <tbody>
+      <tr><td><span class="tag t-good">Low</span></td><td class="num">10.0% <span class="thin">(1/10)</span></td><td class="num">30.0% <span class="thin">(3/10)</span></td><td class="num">−20.0 pp</td></tr>
+      <tr><td><span class="tag t-watch">Medium</span></td><td class="num">9.5% <span class="thin">(2/21)</span></td><td class="num">36.4% <span class="thin">(8/22)</span></td><td class="num">−26.8 pp</td></tr>
+      <tr><td><span class="tag t-mat">High</span></td><td class="num">0.0% <span class="thin">(0/18)</span></td><td class="num">65.2% <span class="thin">(15/23)</span></td><td class="num">−65.2 pp</td></tr>
+      <tr><td><span class="tag t-crit">Critical</span></td><td class="num">0.0% <span class="thin">(0/5)</span></td><td class="num">57.1% <span class="thin">(4/7)</span></td><td class="num">−57.1 pp</td></tr>
+      <tr class="tot"><td>All tiers pooled</td><td class="num">5.6% <span class="thin">(3/54)</span></td><td class="num">48.4% <span class="thin">(30/62)</span></td><td class="num">−42.8 pp</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout resolved">
+    <div class="h">Conclusion</div>
+    <p>The gap runs in the <b>same direction in all four strata</b>, so the association is not produced by tier composition and pooling is appropriate. It also <b>widens as tier rises</b> — 20 percentage points at Low, 65 at High.</p>
+    <p>The strongest single observation available: among the <b>18 High-tier items with an Effective control, none are past due</b>; among the <b>23 High-tier items without one, 15 are</b>.</p>
+    <p class="tech"><b>Statistical basis</b> · Cochran–Mantel–Haenszel test of control rating (Effective vs not) against on-time closure, stratified by risk tier: χ² = 22.89, df = 1, p = 1.7 × 10⁻⁶. Effect direction homogeneous across all four strata.</p>
+  </div>
+</section>
+
+<!-- ---------- A4 AGING ---------- -->
+<section class="ex">
+  <div class="ex-head">
+    <div><p class="ex-num">Exhibit A3</p><h2>Aging profile and exposure concentration</h2></div>
+    <div class="ledger"><div class="frac"><span class="num">33</span><span class="den">33</span></div><span class="lbl">Past-due<br>items only</span></div>
+  </div>
+  <table>
+    <thead><tr><th>Days past due</th><th class="num">Items</th><th class="num">Exposure</th><th class="num">Share of past-due $</th><th class="num">Mean per item</th></tr></thead>
+    <tbody>
+      <tr><td>Under 90</td><td class="num">7</td><td class="num">$0.98M</td><td class="num">2.3%</td><td class="num">$140K</td></tr>
+      <tr><td>90 – 180</td><td class="num">5</td><td class="num">$1.28M</td><td class="num">3.0%</td><td class="num">$256K</td></tr>
+      <tr><td>180 – 365</td><td class="num">9</td><td class="num">$22.98M</td><td class="num">54.6%</td><td class="num">$2.55M</td></tr>
+      <tr><td>Over 365</td><td class="num">12</td><td class="num">$16.84M</td><td class="num">40.0%</td><td class="num">$1.40M</td></tr>
+      <tr class="tot"><td>All past due</td><td class="num">33</td><td class="num">$42.08M</td><td class="num">100%</td><td class="num">$1.28M</td></tr>
+    </tbody>
+  </table>
+  <p class="lede" style="margin-top:14px">Median days past due 305; maximum 523. Median past-due exposure $484K against a mean of $1.28M, confirming heavy right skew — the six largest items carry 65.4% of past-due exposure.</p>
+
+  <div class="callout caveat">
+    <div class="h">Shape of the deadline-facing population, and confirmation the aging profile is real</div>
+    <p>Across all 116 deadline-facing items: <b>65 closed on or before the due date, 25 sit between 1 and 90 days past, 5 between 90 and 180 days, and 21 beyond 180 days.</b> The 25 in the 1–90 band comprise 18 closed-late items and 7 currently past due. The thin middle is a genuine trough rather than a clean gap — closed-late items reach 59 days and the newest past-due items begin at 13 days, so the ranges overlap.</p>
+    <p><b>Confounding check.</b> An aging profile is only meaningful if status genuinely relates to elapsed time. It does: median item age is 96 days for open items, 345 days for closed items and <b>478 days for past-due items</b>. The concentration of exposure in the long tail is a real feature of the register, not an artefact of construction.</p>
+    <p class="tech"><b>Statistical basis</b> · Item age by analytical state, Kruskal–Wallis p &lt; 0.001. Age measured as <code>2026-06-30 − Date_Identified</code>. Aging bands derived from <code>Days_Overdue</code>; see Section A for the closure-reset limitation in that field.</p>
+  </div>
+</section>
+
+<!-- ---------- A5 NULLS ---------- -->
+<section class="ex">
+  <div class="ex-head">
+    <div><p class="ex-num">Exhibit A4</p><h2>Segment comparisons returning no significant difference</h2></div>
+    <div class="ledger"><div class="frac"><span class="num">33</span><span class="den">116</span></div><span class="lbl">Items that<br>faced a deadline</span></div>
+  </div>
+  <p class="lede">Five register dimensions were tested against past-due status. <b>All five returned no significant difference.</b> They are published in full so that the absence of a finding is auditable rather than merely asserted, and so that no reader mistakes the visible spread for a performance ranking.</p>
+
+  <table>
+    <thead><tr><th>Dimension tested</th><th class="num">Groups</th><th class="num">Test statistic</th><th class="num">p-value</th><th>Conclusion</th></tr></thead>
+    <tbody>
+      <tr><td>Identification source</td><td class="num">6</td><td class="num">χ² = 6.09</td><td class="num">0.297</td><td>No significant difference</td></tr>
+      <tr><td>Risk tier</td><td class="num">4</td><td class="num">χ² = 2.75</td><td class="num">0.433</td><td>No significant difference</td></tr>
+      <tr><td>Owner role</td><td class="num">8</td><td class="num">χ² = 8.05</td><td class="num">0.328</td><td>No significant difference</td></tr>
+      <tr><td>Risk domain</td><td class="num">9</td><td class="num">χ² = 4.96</td><td class="num">0.762</td><td>No significant difference</td></tr>
+      <tr><td>Department</td><td class="num">8</td><td class="num">χ² = 3.84</td><td class="num">0.799</td><td>No significant difference</td></tr>
+    </tbody>
+  </table>
+
+  <p class="lede" style="margin-top:20px"><b>Identification source, shown in full.</b> Confidence intervals overlap across every pair.</p>
+  <div class="rows">
+    <div class="row"><div class="name">External Regulatory Exam<span>15 items <span class="thin">— thin base</span></span></div><div class="track"><div class="fill c-watch" style="--w:46.7%"></div><div class="wh" style="--lo:21%;--ww:52%"></div></div><div class="val">46.7%<span>7 · CI 21–73%</span></div></div>
+    <div class="row"><div class="name">Internal Audit<span>24 items</span></div><div class="track"><div class="fill c-watch" style="--w:33.3%"></div><div class="wh" style="--lo:16%;--ww:39%"></div></div><div class="val">33.3%<span>8 · CI 16–55%</span></div></div>
+    <div class="row"><div class="name">RCSA<span>22 items</span></div><div class="track"><div class="fill c-watch" style="--w:31.8%"></div><div class="wh" style="--lo:14%;--ww:41%"></div></div><div class="val">31.8%<span>7 · CI 14–55%</span></div></div>
+    <div class="row"><div class="name">Self-Identified<span>17 items <span class="thin">— thin base</span></span></div><div class="track"><div class="fill c-watch" style="--w:29.4%"></div><div class="wh" style="--lo:10%;--ww:46%"></div></div><div class="val">29.4%<span>5 · CI 10–56%</span></div></div>
+    <div class="row"><div class="name">Issue Management<span>21 items</span></div><div class="track"><div class="fill c-watch" style="--w:19%"></div><div class="wh" style="--lo:5%;--ww:37%"></div></div><div class="val">19.0%<span>4 · CI 5–42%</span></div></div>
+    <div class="row"><div class="name">Third-Party Review<span>17 items <span class="thin">— thin base</span></span></div><div class="track"><div class="fill c-watch" style="--w:11.8%"></div><div class="wh" style="--lo:1%;--ww:35%"></div></div><div class="val">11.8%<span>2 · CI 1–36%</span></div></div>
+  </div>
+  <div class="scale"><span>0%</span><span>50%</span><span>100% past due</span></div>
+
+  <div class="callout caveat">
+    <div class="h">Why the widest-looking gap is not a finding</div>
+    <p>The largest apparent contrast here is External Regulatory Exam (46.7%) against Third-Party Review (11.8%) — a ratio of nearly four. It does not survive scrutiny, for two reasons.</p>
+    <p><b>Multiple comparisons.</b> Selecting the highest and lowest of six groups and reporting the ratio between them will produce a striking-looking gap in almost any dataset. With six groups there are fifteen possible pairings. Taken alone and uncorrected the pair reaches p = 0.049; the Bonferroni-corrected threshold for fifteen comparisons is p = 0.0033, which it misses by more than an order of magnitude.</p>
+    <p><b>Base size.</b> The comparison rests on <b>seven past-due items against two</b>. Two items moving in either group reverses the direction of the result.</p>
+    <p>Bars are drawn in a single neutral colour throughout this exhibit. A red-to-green scale would imply a ranking the data cannot support.</p>
+    <p class="tech"><b>Statistical basis</b> · Pearson χ² on the full contingency table for each dimension, α = 0.05. Bonferroni correction applied to all post-hoc pairwise comparisons. <code>MAP_Linked</code> was also tested (χ² p = 0.987) and likewise shows no association.</p>
+  </div>
+</section>
+
+<!-- ---------- A6 TIER ---------- -->
+<section class="ex">
+  <div class="ex-head">
+    <div><p class="ex-num">Exhibit A5</p><h2>Risk tier: incidence, duration, and the overrun-ratio confound</h2></div>
+    <div class="ledger"><div class="frac"><span class="num">33</span><span class="den">116</span></div><span class="lbl">Items that<br>faced a deadline</span></div>
+  </div>
+  <p class="lede">Tier must be separated into two distinct questions. <b>Whether</b> an item slips shows no relationship to tier. <b>How long</b> it stays slipped does — but only when measured in raw days. The overrun ratio is not a safe measure and the reason is set out below.</p>
+
+  <table>
+    <thead><tr><th>Risk tier</th><th class="num">Faced deadline</th><th class="num">Past due</th><th class="num">Rate</th><th class="num">95% CI</th><th class="num">Median window</th><th class="num">Median days past due</th><th class="num">Overrun ratio</th><th class="num">Exposure</th></tr></thead>
+    <tbody>
+      <tr><td><span class="tag t-crit">Critical</span> <span class="thin">thin</span></td><td class="num">12</td><td class="num">4</td><td class="num">33.3%</td><td class="num">10–65%</td><td class="num">104 d</td><td class="num">302 d</td><td class="num">2.94×</td><td class="num">$24.0M</td></tr>
+      <tr><td><span class="tag t-mat">High</span></td><td class="num">41</td><td class="num">15</td><td class="num">36.6%</td><td class="num">22–53%</td><td class="num">177 d</td><td class="num">410 d</td><td class="num">2.20×</td><td class="num">$15.7M</td></tr>
+      <tr><td><span class="tag t-watch">Medium</span></td><td class="num">43</td><td class="num">10</td><td class="num">23.3%</td><td class="num">12–39%</td><td class="num">211 d</td><td class="num">156 d</td><td class="num">0.70×</td><td class="num">$2.3M</td></tr>
+      <tr><td><span class="tag t-good">Low</span></td><td class="num">20</td><td class="num">4</td><td class="num">20.0%</td><td class="num">6–44%</td><td class="num">259 d</td><td class="num">75 d</td><td class="num">0.27×</td><td class="num">$0.1M</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <div class="h">The overrun ratio is confounded by its own denominator</div>
+    <p>Overrun ratio is defined as <code>Days_Overdue ÷ deadline_window</code>, where the window runs from identification to due date. <b>That window is strongly tier-dependent</b>: median 259 days at Low falling to 104 days at Critical. Critical items are allowed roughly 40% of the remediation time Low items receive.</p>
+    <p>Dividing by a systematically smaller denominator inflates the ratio for higher tiers irrespective of behaviour — and here the distortion is large enough to <b>reverse the ranking</b>. The ratio places Critical (2.94×) above High (2.20×). Measured in raw days, the order inverts: <b>High items sit a median 410 days past due against Critical's 302.</b></p>
+    <p><b>What survives.</b> Raw days past due does differ materially across tiers, rising from 75 days at Low to 302–410 days at the top two tiers. The defensible formulation is: <i>tier does not predict whether an item slips, but top-tier items that slip remain unresolved substantially longer.</i> The overrun ratio column is retained for completeness and should not be cited.</p>
+    <p class="tech"><b>Statistical basis</b> · Past-due rate across tiers, χ² = 2.75, df = 3, p = 0.433. Critical vs High, Fisher exact p = 1.00. Deadline window across tiers, Kruskal–Wallis H = 61.62, p &lt; 0.001. Raw days past due across tiers (past-due items only), Kruskal–Wallis p = 0.005. Overrun figures are medians of per-item ratios, not ratios of medians.</p>
+  </div>
+</section>
+
+<!-- ---------- A7 TOP ITEMS ---------- -->
+<section class="ex">
+  <div class="ex-head">
+    <div><p class="ex-num">Exhibit A6</p><h2>Largest past-due items by exposure</h2></div>
+    <div class="ledger"><div class="frac"><span class="num">6</span><span class="den">33</span></div><span class="lbl">Top items<br>by exposure</span></div>
+  </div>
+  <table>
+    <thead><tr><th>Item</th><th>Department</th><th>Tier</th><th>Control rating</th><th class="num">Days past due</th><th class="num">Exposure</th><th class="num">Share of past-due $</th></tr></thead>
+    <tbody>
+      <tr><td class="id">GRC-2024-0138</td><td>Retail Banking</td><td><span class="tag t-crit">Critical</span></td><td>Not Tested</td><td class="num">474</td><td class="num">$7.40M</td><td class="num">17.6%</td></tr>
+      <tr><td class="id">GRC-2025-0079</td><td>Commercial Lending</td><td><span class="tag t-crit">Critical</span></td><td>Ineffective</td><td class="num">257</td><td class="num">$7.12M</td><td class="num">16.9%</td></tr>
+      <tr><td class="id">GRC-2025-0043</td><td>Wealth Management</td><td><span class="tag t-crit">Critical</span></td><td>Partially Effective</td><td class="num">299</td><td class="num">$6.50M</td><td class="num">15.4%</td></tr>
+      <tr><td class="id">GRC-2025-0156</td><td>Retail Banking</td><td><span class="tag t-crit">Critical</span></td><td>Ineffective</td><td class="num">305</td><td class="num">$3.00M</td><td class="num">7.1%</td></tr>
+      <tr><td class="id">GRC-2024-0100</td><td>Retail Banking</td><td><span class="tag t-mat">High</span></td><td>Ineffective</td><td class="num">499</td><td class="num">$1.76M</td><td class="num">4.2%</td></tr>
+      <tr><td class="id">GRC-2024-0126</td><td>Financial Crimes (AML/BSA)</td><td><span class="tag t-mat">High</span></td><td>Not Tested</td><td class="num">464</td><td class="num">$1.72M</td><td class="num">4.1%</td></tr>
+      <tr class="tot"><td colspan="5">Six items</td><td class="num">$27.50M</td><td class="num">65.4%</td></tr>
+    </tbody>
+  </table>
+  <div class="callout caveat">
+    <div class="h">Reconciliation and one caution against circular reading</div>
+    <p><b>Reconciliation.</b> The four Critical items above total $24.02M, agreeing with the independently-derived Critical past-due exposure of $24.0M in Exhibit A5.</p>
+    <p><b>Caution.</b> None of these six carries an Effective control rating — but this is not corroborating evidence. Only 3 of the 33 past-due items are rated Effective and they hold $0.50M between them, so any ranking by exposure excludes them with near-certainty by construction. The observation is true and uninformative.</p>
+  </div>
+</section>
+
+<!-- ---------- SCOPE ---------- -->
+<section class="ex">
+  <div class="ex-head"><div><p class="ex-num">Scope</p><h2>What this pack establishes, and what it does not</h2></div></div>
+  <div class="boundary">
+    <div class="does">
+      <h3>Supported by this analysis</h3>
+      <ul>
+        <li>The current position of the register by state, item count and exposure, fully reconciled in Section A.</li>
+        <li>How long past-due items have been outstanding and where exposure concentrates within that profile, with the age-dependence of status confirmed.</li>
+        <li><b>That control effectiveness rating is associated with on-time closure</b> (χ² p &lt; 0.000001), and that the association holds after stratification by risk tier (CMH p &lt; 0.00001).</li>
+        <li><b>That "Not Tested" performs indistinguishably from "Partially Effective"</b> (Fisher p = 1.00).</li>
+        <li>That 51 of 116 deadline-facing items breached, of which 18 were subsequently closed.</li>
+        <li>That raw days past due rises with tier (Kruskal–Wallis p = 0.005).</li>
+      </ul>
+    </div>
+    <div class="doesnt">
+      <h3>Not supported — and why</h3>
+      <ul>
+        <li><b>Any difference by identification source, department, owner role, risk domain or MAP linkage.</b> All test null; see Exhibit A4 for statistics.</li>
+        <li><b>That risk tier predicts whether an item goes past due</b> (χ² p = 0.43).</li>
+        <li><b>That the overrun ratio measures behaviour.</b> Its denominator is tier-dependent and the confound reverses the Critical/High ranking.</li>
+        <li><b>That exposure drives outcomes.</b> Exposure is banded from tier with near-disjoint ranges; dollar concentration restates tier concentration.</li>
+        <li><b>Whether performance is improving.</b> Single cross-sectional snapshot; period-over-period comparison requires a second observation.</li>
+        <li><b>Whether the breach rate is acceptable.</b> No internal threshold or external benchmark exists in this data and none has been assumed.</li>
+        <li><b>What should be done.</b> This pack describes the position. Setting tolerances and directing remediation sits with leadership.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer class="foot">
+  <p><b>Population and denominators.</b> 160 items, snapshot 30 June 2026. Descriptive measures use all 160 items. All timeliness measures use the 116 items whose due date fell on or before the snapshot; the remaining 44 were not yet due and cannot be late. Of the 117 closed items, 34 closed before their due date arrived and are excluded from on-time rate calculations — the reported on-time rate of 78.3% uses the 83 closed items that faced a deadline. Breach is reported on three bases: 20.6% of the full register currently past due, 28.4% of deadline-facing items currently past due, and 44.0% of deadline-facing items breached at any point.</p>
+  <p><b>Known limitation in the source register.</b> <code>Days_Overdue</code> is reset to zero on closure. Eighteen items closed between 1 and 59 days late (median 22) and read zero. Breach measures taken from that field alone understate missed deadlines by 15.5 percentage points. Historical lateness must be reconstructed as <code>Closed_Date − Due_Date</code>. <b>Recommended schema change: add a persistent <code>Days_Late_At_Closure</code> field.</b></p>
+  <p><b>Method.</b> Cross-sectional comparison only — segment against segment and against the eligible-population mean. No trend claims, no external benchmark. All rates carry Clopper–Pearson exact 95% confidence intervals. Categorical comparisons use Pearson χ², or Fisher exact where expected cell counts are small; the stratified analysis uses Cochran–Mantel–Haenszel; continuous comparisons use Kruskal–Wallis. Post-hoc pairwise comparisons are Bonferroni-corrected. Groups of fewer than 20 items are marked thin base without exception and must not be read as conclusions about a named unit.</p>
+  <p><b>Data lineage and verification.</b> Source: <code>grc_risk_register.csv</code>, 160 rows × 19 fields, snapshot date 30 June 2026. Identification dates span 4 July 2024 to 30 June 2026; due dates 3 January 2025 to 18 April 2027; closure dates 15 September 2024 to 30 June 2026. 160 distinct <code>Item_ID</code> and 160 distinct <code>Control_ID</code> values; 19 distinct regulatory drivers. The only null field is <code>Closed_Date</code> (43 nulls, corresponding exactly to the 43 non-closed items). Risk tier is a deterministic banding of <code>Inherent_Risk_Score</code> and <code>Financial_Exposure_USD</code> is banded from tier — these fields are not independent and no finding in this pack treats them as such. Every figure in this pack has been recomputed independently from source and reconciled across exhibits.</p>
+  <p><b>Source and accountability.</b> Synthetic GRC risk register prepared for demonstration purposes; contains no employer data. Analysis prepared with Claude under human direction, subjected to independent adversarial review against source data, and issued in final form 1 August 2026. Reviewed, verified and owned by Nivaldo (Neo) Fragoso.</p>
+</footer>
+
+</div><!-- /panel-audit -->
+
+</div><!-- /sheet -->
+
+<script>
+(function(){
+  var tabs=[].slice.call(document.querySelectorAll('.tab'));
+  /* Progressive enhancement: both panels are visible in the markup so that the
+     full document remains readable if scripting is blocked (submission portals,
+     document previewers, email clients). Tabs are activated only once JS runs. */
+  document.querySelector('.tabs').style.display='flex';
+  document.getElementById('panel-audit').hidden=true;
+  var d=document.getElementById('panel-divider'); if(d){d.style.display='none';}
+  function show(id){
+    tabs.forEach(function(t){
+      var sel=t.id===id;
+      t.setAttribute('aria-selected',sel?'true':'false');
+      document.getElementById(t.getAttribute('aria-controls')).hidden=!sel;
+    });
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  tabs.forEach(function(t){
+    t.addEventListener('click',function(){show(t.id);});
+    t.addEventListener('keydown',function(e){
+      var i=tabs.indexOf(t);
+      if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
+        e.preventDefault();
+        var n=tabs[(i+(e.key==='ArrowRight'?1:tabs.length-1))%tabs.length];
+        n.focus();show(n.id);
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>
